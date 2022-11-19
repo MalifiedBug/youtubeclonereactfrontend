@@ -18,8 +18,6 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
-import MailIcon from "@mui/icons-material/Mail";
 import { useState, useEffect } from "react";
 import VideoCard from "./VideoCard";
 import YouTubeIcon from "@mui/icons-material/YouTube";
@@ -32,8 +30,6 @@ import SubscriptionsIcon from '@mui/icons-material/Subscriptions';
 import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
 import RestoreIcon from '@mui/icons-material/Restore';
 
-const clientId =
-  "268137465827-sgvtl3f7boj7i4cfr6rialb19unur8uv.apps.googleusercontent.com";
 
 const drawerWidth = 240;
 
@@ -151,16 +147,9 @@ export default function MiniDrawer() {
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
   const icons = [<HomeIcon/>,<AutoAwesomeMotionIcon/>,<SubscriptionsIcon/>,<VideoLibraryIcon/>,<RestoreIcon/>]
 
-  const onSuccess = (res) => {
-    console.log("success:", res);
-  };
-  const onFailure = (err) => {
-    console.log("failed:", err);
-  };
 
-  const handleMobileMenuClose = () => {
-    setMobileMoreAnchorEl(null);
-  };
+
+ console.log(mobileMoreAnchorEl)
 
   const handleMobileMenuOpen = (event) => {
     setMobileMoreAnchorEl(event.currentTarget);
