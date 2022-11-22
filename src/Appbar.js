@@ -29,6 +29,12 @@ import AutoAwesomeMotionIcon from '@mui/icons-material/AutoAwesomeMotion';
 import SubscriptionsIcon from '@mui/icons-material/Subscriptions';
 import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
 import RestoreIcon from '@mui/icons-material/Restore';
+import { Routes, Route } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import GoogleLogin from 'react-google-login';
+import { useGoogleLogin } from 'react-google-login'
+import { useGoogleLogout } from 'react-google-login'
+
 
 
 const drawerWidth = 240;
@@ -143,13 +149,14 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 export default function MiniDrawer() {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
-  const [data, setData] = useState([]);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
   const icons = [<HomeIcon/>,<AutoAwesomeMotionIcon/>,<SubscriptionsIcon/>,<VideoLibraryIcon/>,<RestoreIcon/>]
+  const navigate = useNavigate();
+
+  
 
 
 
- console.log(mobileMoreAnchorEl)
 
   const handleMobileMenuOpen = (event) => {
     setMobileMoreAnchorEl(event.currentTarget);
@@ -166,24 +173,15 @@ export default function MiniDrawer() {
   };
 
   //fetching youtube api
-  useEffect(() => {
-    const options = {
-      method: "GET",
-      headers: {
-        "X-RapidAPI-Key": "909c34f372msh0a52a6c53b8868ap171bc6jsnc3e2e06f33c4",
-        "X-RapidAPI-Host": "yt-api.p.rapidapi.com",
-      },
-    };
-
-    fetch("https://yt-api.p.rapidapi.com/trending?geo=US", options)
-      .then((response) => response.json())
-      .then((response) => setData(response))
-      .catch((err) => console.error(err));
-  }, []);
-
-  const data1 = data.data;
-
+  
   const [search, setSearch] = useState("");
+
+  const drawerButtons = ["Home", "Shorts", "Subscriptions","Library", "History"]
+  const drawerLinks = ['/home', '/shorts','/subscriptions','/library','/history']
+
+  const responseGoogle = (response) => {
+    alert(response);
+  }
 
   return (
     <div>
@@ -235,13 +233,18 @@ export default function MiniDrawer() {
             >
               <MoreIcon />
             </IconButton>
-            <Button
-              style={{ color: "white", borderRadius: "16px" }}
-              variant="outlined"
-              startIcon={<AccountCircleIcon />}
-            >
-              Sign In
-            </Button>
+            
+            <GoogleLogin
+    clientId="899485462809-74e59ll0cd137ioo7jl39r2p2nn67og9.apps.googleusercontent.com"
+    render={renderProps => (
+      
+      <Button sx={{color:"white", border:"solid"}} onClick={renderProps.onClick} disabled={renderProps.disabled}>Google Sign In</Button>
+    )}
+    onSuccess={responseGoogle}
+    onFailure={responseGoogle}
+    cookiePolicy={'single_host_origin'}
+    isSignedIn={true}
+  />
           </div>
         </Toolbar>
       </AppBar>
@@ -260,14 +263,15 @@ export default function MiniDrawer() {
           </DrawerHeader>
           <Divider />
           <List>
-            {["Home", "Shorts", "Subscriptions","Library", "History"].map((text, index) => (
-              <ListItem key={text} disablePadding sx={{ display: "block" }}>
+            {drawerButtons.map((text, index) => (
+              <ListItem key={index} disablePadding sx={{ display: "block" }}>
                 <ListItemButton
                   sx={{
                     minHeight: 48,
                     justifyContent: open ? "initial" : "center",
                     px: 2.5,
-                  }}
+                  }}   
+                  href={drawerLinks[index]}
                 >
                   <ListItemIcon
                     sx={{
@@ -285,11 +289,44 @@ export default function MiniDrawer() {
           </List>
          
         </Drawer>
+        {/* adding routes here */}
         <Box className="videosbox" component="main" sx={{ flexGrow: 1, p: 3 }}>
           <DrawerHeader />
-          {data1 ? data1.map((dat) => <VideoCard data={dat} />) : ""}
+          <Routes>
+            <Route path="/home" element={<Home />}/>
+          </Routes>
+          
         </Box>
       </Box>
     </div>
   );
 }
+
+function Home(){
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    const options = {
+      method: "GET",
+      headers: {
+        "X-RapidAPI-Key": "909c34f372msh0a52a6c53b8868ap171bc6jsnc3e2e06f33c4",
+        "X-RapidAPI-Host": "yt-api.p.rapidapi.com",
+      },
+    };
+
+    fetch("https://yt-api.p.rapidapi.com/trending?geo=US", options)
+      .then((response) => response.json())
+      .then((response) => setData(response))
+      .catch((err) => console.error(err));
+  }, []);
+
+  const data1 = data.data;
+
+  return(
+    <div className="homediv">
+      {data1 ? data1.map((dat) => <VideoCard data={dat} />) : ""}      
+    </div>
+  )
+}
+
+
